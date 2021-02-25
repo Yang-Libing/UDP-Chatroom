@@ -44,6 +44,8 @@
 #define LEVEL_AMMIN			01
 #define LEVEL_SUPER_ADMIN   02
 
+//服务器的IP及端口
+#define DEFAULT_IP "192.168.1.103"
 #define DEFAULT_PORT 27015
 
 extern sockaddr_in clientService;

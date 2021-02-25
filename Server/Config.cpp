@@ -117,30 +117,24 @@ int ReadConfig()
 
 int InitConfig()
 {
-	//printf("Enter InitConfig.\n");
 	int nRet = SUCCESS;
 	PUserData pUserData;
 	if (_access(CONFIG_FILE, 0) != -1) // 配置文件存在  //_access:判断文件是否存在，位于头文件<io.h>中。
 	{
-		//printf("InitConfig----0.\n");
 		nRet = ReadConfig();
 	}
-	else                             //配置文件不存在
+	else     //配置文件不存在
 	{
-		//printf("InitConfig----1.\n");
 		// 生成超级管理员并保存
 		g_pUserDataBegin = (PUserDataNode)malloc(sizeof(UserDataNode));
 		pUserData = (PUserData)malloc(sizeof(UserData));
-		//printf("InitConfig----2.\n");
 		if (g_pUserDataBegin == NULL || pUserData == NULL)
 		{
-			//printf("InitConfig----3.\n");
 			printf("Malloc failed!");
 			nRet = ERROR_MALLOC;
 		}
 		else
 		{
-			//printf("InitConfig----4.\n");
 			g_pUserDataBegin->userData = pUserData;
 			strcpy_s(g_pUserDataBegin->userData->userName, USER_NAME_LEN, "SuperAdmin");
 			strcpy_s(g_pUserDataBegin->userData->userPwd, USER_PWD_LEN, "123456");
@@ -149,13 +143,11 @@ int InitConfig()
 			nRet = SaveConfig();
 		}
 	}
-	//printf("InitConfig----5.\n");
 	return nRet;
 }
 
 int SaveConfig()
 {
-	//printf("Enter SaceConfig.\n");
 	int nRet = SUCCESS;
 	char buf[FILE_BUFLEN];
 	char ciphertext[FILE_BUFLEN];  //密文

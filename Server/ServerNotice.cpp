@@ -20,14 +20,12 @@ int SendOnlineUserList(SOCKET srvSocket, PUserOnlineNode pCurrUser)
 
 	while (pOnlineNode)
 	{
-		//nRet = SendHead(pCurrUser->userSocket, &head);
 		nRet = SendHead(srvSocket, &head, pCurrUser->userAddr);
 		if (nRet == SUCCESS)
 		{
 			pUserData->userLevel = pOnlineNode->userData->userLevel;
 			strcpy_s(pUserData->userName, USER_NAME_LEN, pOnlineNode->userData->userName);
 			strcpy_s(pUserData->userPwd, USER_PWD_LEN, "");
-			//nRet = SendData(pCurrUser->userAddr, (char*)pUserData, sizeof(UserData));
 			nRet = SendData(srvSocket, (char*)pUserData, sizeof(UserData), pCurrUser->userAddr);
 		}
 		pOnlineNode = pOnlineNode->pNext;
@@ -57,14 +55,12 @@ int SendAllUserList(SOCKET srvSocket, PUserOnlineNode pCurrUser)
 
 	while (pUserDataNode)
 	{
-		//nRet = SendHead(pCurrUser->userAddr, &head);
 		nRet = SendHead(srvSocket, &head, pCurrUser->userAddr);
 		if (nRet == SUCCESS)
 		{
 			pUserData->userLevel = pUserDataNode->userData->userLevel;
 			strcpy_s(pUserData->userName, USER_NAME_LEN, pUserDataNode->userData->userName);
 			strcpy_s(pUserData->userPwd, USER_PWD_LEN, "");
-			//nRet = SendData(pCurrUser->userAddr, (char*)pUserData, sizeof(UserData));
 			nRet = SendData(srvSocket, (char*)pUserData, sizeof(UserData), pCurrUser->userAddr);
 		}
 		pUserDataNode = pUserDataNode->pNext;
@@ -92,14 +88,12 @@ int SendCurrentUser(SOCKET srvSocket, PUserOnlineNode pCurrUser)
 		return ERROR_MALLOC;
 	}
 
-	//nRet = SendHead(pCurrUser->userAddr, &head);
 	nRet = SendHead(srvSocket, &head, pCurrUser->userAddr);
 	if (nRet == SUCCESS)
 	{
 		pUserData->userLevel = pCurrUser->userData->userLevel;
 		strcpy_s(pUserData->userName, USER_NAME_LEN, pCurrUser->userData->userName);
 		strcpy_s(pUserData->userPwd, USER_PWD_LEN, pCurrUser->userData->userPwd);
-		//nRet = SendData(pCurrUser->userAddr, (char *)pCurrUser->userData, sizeof(UserData));
 		nRet = SendData(srvSocket, (char *)pCurrUser->userData, sizeof(UserData), pCurrUser->userAddr);
 	}
 	return nRet;

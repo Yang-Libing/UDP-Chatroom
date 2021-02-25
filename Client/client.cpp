@@ -31,30 +31,18 @@ int CreateConnectSocket(char *serverName, SOCKET *pConnectSocket)
 {
 	int nRet = SUCCESS;
 	int iResult;
-	//sockaddr_in clientService;
 	// 确定服务器地址和端口 
 	clientService.sin_family = AF_INET;
 	clientService.sin_addr.s_addr = inet_addr(serverName);
 	clientService.sin_port = htons(DEFAULT_PORT);
 
 	// 创建套接字连接到服务器
-	//*pConnectSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	*pConnectSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	if (*pConnectSocket == INVALID_SOCKET)
 	{
 		printf("Error at socket(): %ld\n", WSAGetLastError());
 		nRet = ERROR_OTHER;
 	}
-	// 创建成功,连接服务器
-	/*if (nRet == 0)
-	{
-		iResult = connect(*pConnectSocket, (SOCKADDR *)&clientService, sizeof(clientService));
-		if (iResult == SOCKET_ERROR)
-		{
-			printf("Error at cnnect(): %d\n", iResult);
-			nRet = ERROR_OTHER;
-		}
-	}*/
 
 	return nRet;
 }
@@ -297,11 +285,9 @@ int main(int argc, char*argv[])
 	char userName[USER_NAME_LEN];
 	char userPwd[USER_PWD_LEN];
 	char msgBuf[MASSAGE_BUFLEN];
-	char ServerName[IP_LEN] = "192.168.9.39";//"127.0.0.1";
+	char ServerName[IP_LEN] = DEFAULT_IP;
 	int option;
 	bool isExit = false;
-	//printf("请输入服务器ip: ");
-	//gets(ServerName);
 
 	// 初始化winsock 
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -340,9 +326,7 @@ int main(int argc, char*argv[])
 					printf("您输入的注册信息不合法！\n");
 					break;
 				}
-				//printf("Before Register.\n");
 				iResult = Register(userName, userPwd);
-				//printf("After Register.\n");
 				if (iResult == SUCCESS)
 				{
 					printf("注册成功！\n");

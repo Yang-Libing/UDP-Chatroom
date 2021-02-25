@@ -3,25 +3,20 @@
 
 bool IsNameRepeat(char *pUserName)
 {
-	//printf("In IsNameRepeat.\n");
 	bool isRepeat = false;
 	PUserDataNode userNode = g_pUserDataBegin;
 	while (userNode)
 	{
-		//printf("In IsNameRepeat----1.\n");
 		if (userNode) printf("userNode->userData->userName is: %s\n", userNode->userData->userName);
 		else printf("userNode is NULL. \n");
 
 		if (strcmp(userNode->userData->userName, pUserName) == 0)
 		{
-			//printf("In IsNameRepeat----2.\n");
 			isRepeat = true;
 			break;
 		}
-		//printf("In IsNameRepeat----3.\n");
 		userNode = userNode->pNext;
 	}
-	//printf("In IsNameRepeat----4.\n");
 	return isRepeat;
 }
 
@@ -40,16 +35,12 @@ int Register(SOCKET srvSocket, sockaddr_in& currAddr)
 		return ERROR_MALLOC;
 	}
 
-	//printf("Enter Register.\n");
 	nRet = RecvData(srvSocket, (char *)userData, sizeof(UserData), currAddr);
-	//printf("After Register.\n");
 	if (nRet == SUCCESS)
 	{
-		//printf("After Register----1.\n");
 		// 检查用户名是否重复
 		if (IsNameRepeat(userData->userName))
 		{
-			//printf("After Register----2.\n");
 			res.response = RES_FAULT;
 			nRet = ERROR_OTHER;
 			free(userData);
@@ -59,7 +50,6 @@ int Register(SOCKET srvSocket, sockaddr_in& currAddr)
 		}
 		else
 		{
-			//printf("After Register----3.\n");
 			res.response = RES_SUCCESS;
 			// 添加新用户的信息到内存中
 			userNode->userData = userData;
@@ -67,9 +57,7 @@ int Register(SOCKET srvSocket, sockaddr_in& currAddr)
 			g_pUserDataEnd->pNext = userNode;
 			g_pUserDataEnd = userNode;
 		}
-		//printf("After Register----4.\n");
 		SendHead(srvSocket, &res, currAddr);
-		//printf("After Register----5.\n");
 	}
 	printf("%s 注册为聊天室用户\n", userData->userName);
 	SaveConfig();
@@ -96,12 +84,9 @@ int Login(SOCKET srvSocket, PUserOnlineNode& pCurrUserNode, bool *isLogin, socka
 	res.dataLen = 0;
 	res.response = RES_FAULT;
 
-	//printf("Login 1...\n");
 	nRet = RecvData(srvSocket, (char *)userData, sizeof(UserData), currAddr);
-	//printf("Login 2...\n");
 	if (nRet == SUCCESS)
 	{
-		//printf("Login 5...\n");
 		// 查看用户名和密码是否正确
 		while (userNode)
 		{
@@ -115,11 +100,9 @@ int Login(SOCKET srvSocket, PUserOnlineNode& pCurrUserNode, bool *isLogin, socka
 			}
 			userNode = userNode->pNext;
 		}
-		//printf("Login 6...\n");
 		// 登陆信息正确
 		if (isLoginSuccess)
 		{
-			//printf("Login 7...\n");
 			// 查找是否重复登陆
 			while (pOnlineNode)
 			{
@@ -131,7 +114,6 @@ int Login(SOCKET srvSocket, PUserOnlineNode& pCurrUserNode, bool *isLogin, socka
 				pOnlineNode = pOnlineNode->pNext;
 			}
 
-			//printf("Login 8...\n");
 			// 没有重复登陆
 			if (!isLoginRepeat)
 			{
@@ -142,12 +124,10 @@ int Login(SOCKET srvSocket, PUserOnlineNode& pCurrUserNode, bool *isLogin, socka
 					return ERROR_MALLOC;
 				}
 
-				//printf("Login 9...\n");
 				res.response = RES_SUCCESS;
 				*isLogin = true;
 				// 添加用户信息到在线用户的链表之中
 				pCurrUserNode->userData = userNode->userData;
-				//pCurrUserNode->userSocket = connSocket;
 				pCurrUserNode->userAddr = currAddr;
 				pCurrUserNode->pNext = NULL;
 				pCurrUserNode->pPrior = g_pUserOnlineEnd;
@@ -172,9 +152,7 @@ int Login(SOCKET srvSocket, PUserOnlineNode& pCurrUserNode, bool *isLogin, socka
 		}
 	}
 
-	//printf("Login 3...\n");
 	SendHead(srvSocket, &res, currAddr);
-	//printf("Login 4...\n");
 	free(userData);
 	return nRet;
 }
@@ -248,7 +226,6 @@ int SetUserName(SOCKET *srvSocket, PUserOnlineNode pUserOnlienNode)
 	resHead.cmd = CMD_SET_USER_NAME;
 	resHead.dataLen = 0;
 
-	//nRet = RecvData(pUserOnlienNode->userSocket, newName, USER_NAME_LEN);
 	nRet = RecvData(*srvSocket, newName, USER_NAME_LEN, pUserOnlienNode->userAddr);
 	if (nRet == SUCCESS)
 	{
@@ -271,7 +248,6 @@ int SetUserName(SOCKET *srvSocket, PUserOnlineNode pUserOnlienNode)
 		resHead.response = RES_FAULT;
 	}
 
-	//nRet = SendHead(pUserOnlienNode->userSocket, &resHead);
 	nRet = SendHead(*srvSocket, &resHead, pUserOnlienNode->userAddr);
 	return nRet;
 }
@@ -285,7 +261,6 @@ int SetUserPwd(SOCKET srvSocket, PUserOnlineNode pUserOnlienNode)
 	resHead.cmd = CMD_SET_USER_PWD;
 	resHead.dataLen = 0;
 
-	//nRet = RecvData(pUserOnlienNode->userAddr, newPwd, USER_NAME_LEN);
 	nRet = RecvData(srvSocket, newPwd, USER_NAME_LEN, pUserOnlienNode->userAddr);
 	if (nRet == SUCCESS)
 	{
@@ -300,7 +275,6 @@ int SetUserPwd(SOCKET srvSocket, PUserOnlineNode pUserOnlienNode)
 		resHead.response = RES_FAULT;
 	}
 
-	//nRet = SendHead(pUserOnlienNode->userAddr, &resHead);
 	nRet = SendHead(srvSocket, &resHead, pUserOnlienNode->userAddr);
 	return nRet;
 }

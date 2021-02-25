@@ -13,17 +13,14 @@ int GroupMassage(SOCKET srvSocket, PUserOnlineNode pCurrUser, DataHead *head)
 		return ERROR_MALLOC;
 	}
 
-	//nRet = RecvData(pCurrUser->userAddr, buf, head->dataLen);
 	nRet = RecvData(srvSocket, buf, head->dataLen, pCurrUser->userAddr);
 	if (nRet == SUCCESS)
 	{
 		while (pOnlineNode)
 		{
-			//nRet = SendHead(pOnlineNode->userAddr, head);
 			nRet = SendHead(srvSocket, head, pOnlineNode->userAddr);
 			if (nRet == SUCCESS)
 			{
-				//nRet = SendData(pOnlineNode->userAddr, buf, head->dataLen);
 				nRet = SendData(srvSocket, buf, head->dataLen, pOnlineNode->userAddr);
 			}
 			pOnlineNode = pOnlineNode->pNext;
@@ -53,7 +50,6 @@ int PrivateMassage(SOCKET srvSocket, PUserOnlineNode pCurrUser, DataHead *head)
 	resHead.cmd = CMD_PRIVATECHAT;
 	resHead.dataLen = 0;
 
-	//nRet = RecvData(pCurrUser->userAddr, buf, head->dataLen);
 	nRet = RecvData(srvSocket, buf, head->dataLen, pCurrUser->userAddr);
 	pChat = (PrivateChat *)buf;
 	toUser = buf + sizeof(PrivateChat) + pChat->fromUserLen;
@@ -62,14 +58,12 @@ int PrivateMassage(SOCKET srvSocket, PUserOnlineNode pCurrUser, DataHead *head)
 	{
 		if (strcmp(toUser, pOnlineNode->userData->userName) == 0)
 		{
-			//nRet = SendHead(pOnlineNode->userAddr, head);
 			nRet = SendHead(srvSocket, head, pOnlineNode->userAddr);
 			if (nRet != SUCCESS)
 			{
 				break;
 			}
 			// 发送消息
-			//nRet = SendData(pOnlineNode->userAddr, buf, head->dataLen);
 			nRet = SendData(srvSocket, buf, head->dataLen, pOnlineNode->userAddr);
 			printf("[%s] 对 [%s] 发送了消息\n", pCurrUser->userData->userName, toUser);
 			resHead.response = RES_SUCCESS;
@@ -84,7 +78,6 @@ int PrivateMassage(SOCKET srvSocket, PUserOnlineNode pCurrUser, DataHead *head)
 		resHead.response = RES_FAULT;
 	}
 
-	//nRet = SendHead(pCurrUser->userAddr, &resHead);
 	nRet = SendHead(srvSocket, &resHead, pCurrUser->userAddr);
 	return nRet;
 }
