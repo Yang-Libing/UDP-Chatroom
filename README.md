@@ -17,7 +17,7 @@ git clone https://github.com/Yang-Libing/UDP-Chatroom.git
 ```
 + Get into the repository and double click the Win-socket.sln
 + Compile the Client project and Server project separately.
-+ Deploy the executive ```Server``` to the server and ```Client``` to the client machines.
++ Deploy the executive ```Server``` to the server machine and ```Client``` client machine separately.
 
 ## Optimizable Space
 + Add a database for the storation of user information.
