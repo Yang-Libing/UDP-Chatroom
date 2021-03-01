@@ -192,24 +192,20 @@ int Logout(SOCKET *srvSocket, PUserOnlineNode& pUserOnlienNode, bool *isLogin)
 		{
 			g_pUserOnlineBegin = NULL;
 			g_pUserOnlineEnd = NULL;
-			//free(pUserOnlienNode);
 		}
 		else if (g_pUserOnlineBegin == pUserOnlienNode) //当该用户为第一个用户时
 		{
 			g_pUserOnlineBegin = pUserOnlienNode->pNext;
-			//free(pUserOnlienNode);
 		}
 		else if (g_pUserOnlineEnd == pUserOnlienNode) // 当该用户为最后一个用户时
 		{
 			g_pUserOnlineEnd = pUserOnlienNode->pPrior;
 			g_pUserOnlineEnd->pNext = NULL;
-			//free(pUserOnlienNode);
 		}
 		else
 		{
 			pUserOnlienNode->pPrior->pNext = pUserOnlienNode->pNext;
 			pUserOnlienNode->pNext->pPrior = pUserOnlienNode->pPrior;
-			//free(pUserOnlienNode);
 		}
 		resHead.response = RES_SUCCESS;
 		*isLogin = false;

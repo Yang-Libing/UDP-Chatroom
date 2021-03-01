@@ -80,8 +80,8 @@ int PrivateMassage(SOCKET srvSocket, PUserOnlineNode pCurrUser, DataHead *head)
 		resHead.response = RES_FAULT;
 	}
 	if (isExistToUser == false) {
-		resHead.response = RES_FAULT;
 		printf("[%s] 发生私聊信息失败！因为该用户不在当前在线列表中!\n", toUser);
+		resHead.response = RES_FAULT;
 
 	}
 

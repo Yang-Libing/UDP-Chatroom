@@ -164,11 +164,13 @@ void Run()
 	char userName[USER_NAME_LEN];
 	char userPwd[USER_PWD_LEN];
 	int option;
+	
 	printf("|--------------------------聊天室菜单：-------------------------------|\n");
 	printf("| 1.发送群消息   2.发送私聊消息 3.获取当前在线用户 4.获取所有用户     |\n");
 	printf("| 5.设置用户名   6.设置登陆密码                                       |\n");
 	printf("| 7.强制用户离开(ADMIN)  8.设置用户级别(SUPER ADMIN)  9.退出登陆      |\n");
 	printf("|---------------------------------------------------------------------|\n");
+	
 	// 创建接受信息的线程
 	hThread = (HANDLE)_beginthreadex(NULL, 0, &RecvMsgThread, (void*)&g_connectSocket, 0, NULL);
 	CloseHandle(hThread);

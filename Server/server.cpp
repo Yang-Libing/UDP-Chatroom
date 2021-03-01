@@ -84,22 +84,6 @@ unsigned __stdcall ClientThread(void *pSocket)
 
 		while (!g_isExit && nRet == SUCCESS)
 		{
-			/*
-			目前存在一个严重的Bug:
-			    多个用户登陆时，服务器崩溃。
-			可以尝试：
-			1. 查看客户端连接的端口号
-			2. isLogin这个变量好像有问题，第一个用户登陆后是true，但对于第二个用户
-			来说应该是false，但是此时还是true。
-			3. 使用curAddrIfLogin[tmp]时，问题：登陆2个用户，不管是先登的还是后登的，
-			先点了获取当前在线列表，都是后登的用户界面重复显示。
-			4. currOnlineUser这个变量有问题，这个变量只malloc了一次，而每登陆一个用户应该再malloc一次!
-			5. malloc重新调整了，但是还没进行free处理！
-			6. 有些函数不需要currAddr
-			7. 2个用户登陆，然后其中一个退出，另一个给他私聊，然后出错！
-			8. 
-			*/
-
 			memset(&currAddr, 0, sizeof(currAddr));
 			nRet = RecvHead(*pListenSocket, &head, currAddr);
 			if (nRet != SUCCESS)
@@ -114,10 +98,10 @@ unsigned __stdcall ClientThread(void *pSocket)
 				switch (head.cmd)
 				{
 				case CMD_REGIEST:
-					nRet = Register(*pListenSocket, currAddr);  //clientSocket
+					nRet = Register(*pListenSocket, currAddr);
 					break;
 				case CMD_LOGIN:
-					nRet = Login(*pListenSocket, currOnlineUser, &isLogin, currAddr);   //clientSocket
+					nRet = Login(*pListenSocket, currOnlineUser, &isLogin, currAddr);
 					break;
 				default:
 					nRet = ERROR_OTHER;
