@@ -46,16 +46,11 @@ int Register(char *pUserName, char *pPassword)
 	head.response = RES_NULL;
 	head.dataLen = sizeof(UserData);
 
-	//printf("In Register----1.\n");
 	nRet = SendHead(g_connectSocket, &head);
-	//printf("In Register----2.\n");
 	if (nRet == SUCCESS)
 	{
-		//printf("In Register----3.\n");
 		nRet = SendData(g_connectSocket, (char*)&userData, sizeof(UserData));
-		//printf("In Register----4.\n");
 		RecvHead(g_connectSocket, &head);
-		//printf("In Register----5.\n");
 		if (head.response != RES_SUCCESS)
 		{
 			printf("Register failed!\n");

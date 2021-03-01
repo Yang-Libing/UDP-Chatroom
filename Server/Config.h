@@ -19,7 +19,6 @@ typedef struct _UserDataNode
 typedef struct _UserOnlineNode
 {
 	PUserData userData;
-	//SOCKET userSocket;
 	sockaddr_in userAddr;
 	_UserOnlineNode *pPrior;
 	_UserOnlineNode *pNext;

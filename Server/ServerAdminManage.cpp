@@ -14,7 +14,6 @@ int SetUserOffLine(SOCKET srvSocket, PUserOnlineNode pCurrUser)
 	head.response = RES_FAULT;
 	head.dataLen = 0;
 
-	//nRet = RecvData(pCurrUser->userAddr, userName, USER_NAME_LEN);
 	nRet = RecvData(srvSocket, userName, USER_NAME_LEN, pCurrUser->userAddr);
 	if (nRet == SUCCESS && pCurrUser->userData->userLevel >= LEVEL_AMMIN)
 	{
@@ -22,8 +21,7 @@ int SetUserOffLine(SOCKET srvSocket, PUserOnlineNode pCurrUser)
 		{
 			if (strcmp(userName, pOnlineNode->userData->userName) == 0)
 			{
-				//Logout(&pOnlineNode->userAddr, pOnlineNode, &isLogin);
-				Logout(&srvSocket, pOnlineNode, &isLogin, pOnlineNode->userAddr);
+				Logout(&srvSocket, pOnlineNode, &isLogin);
 				head.response = RES_SUCCESS;
 				break;
 			}
@@ -31,7 +29,6 @@ int SetUserOffLine(SOCKET srvSocket, PUserOnlineNode pCurrUser)
 		}
 	}
 
-	//nRet = SendHead(pCurrUser->userAddr, &head);
 	nRet = SendHead(srvSocket, &head, pCurrUser->userAddr);
 	return nRet;
 }
@@ -47,7 +44,6 @@ int SetUserLevel(SOCKET srvSocket, PUserOnlineNode pCurrUser)
 	resHead.response = RES_FAULT;
 	resHead.dataLen = 0;
 
-	//nRet = RecvData(pCurrUser->userAddr, (char*)&userData, sizeof(UserData));
 	nRet = RecvData(srvSocket, (char*)&userData, sizeof(UserData), pCurrUser->userAddr);
 	if (nRet == SUCCESS && pCurrUser->userData->userLevel == LEVEL_SUPER_ADMIN)
 	{

@@ -11,7 +11,7 @@ int Register(SOCKET srvSocket, sockaddr_in& currAddr);
 
 int Login(SOCKET srvSocket, PUserOnlineNode& pCurrUserNode, bool *isLogin, sockaddr_in& currAddr);
 
-int Logout(SOCKET *srvSocket, PUserOnlineNode pUserOnlienNode, bool *isLogin, sockaddr_in& currAddr);
+int Logout(SOCKET *srvSocket, PUserOnlineNode& pUserOnlienNode, bool *isLogin);
 
 int SetUserName(SOCKET *srvSocket, PUserOnlineNode pUserOnlienNode);
 

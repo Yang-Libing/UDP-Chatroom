@@ -30,31 +30,18 @@ bool g_isLogin = false;
 int CreateConnectSocket(char *serverName, SOCKET *pConnectSocket)
 {
 	int nRet = SUCCESS;
-	int iResult;
-	//sockaddr_in clientService;
 	// 确定服务器地址和端口 
 	clientService.sin_family = AF_INET;
 	clientService.sin_addr.s_addr = inet_addr(serverName);
 	clientService.sin_port = htons(DEFAULT_PORT);
 
 	// 创建套接字连接到服务器
-	//*pConnectSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	*pConnectSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	if (*pConnectSocket == INVALID_SOCKET)
 	{
 		printf("Error at socket(): %ld\n", WSAGetLastError());
 		nRet = ERROR_OTHER;
 	}
-	// 创建成功,连接服务器
-	/*if (nRet == 0)
-	{
-		iResult = connect(*pConnectSocket, (SOCKADDR *)&clientService, sizeof(clientService));
-		if (iResult == SOCKET_ERROR)
-		{
-			printf("Error at cnnect(): %d\n", iResult);
-			nRet = ERROR_OTHER;
-		}
-	}*/
 
 	return nRet;
 }
@@ -189,7 +176,7 @@ void Run()
 	printf("\n请输入指令：\n");
 	while (g_isLogin)
 	{
-		scanf("%d", &option);
+		scanf_s("%d", &option);
 		while (getchar() != '\n')
 		{
 			continue;
@@ -230,7 +217,6 @@ void Run()
 			nRet = SetUserPwd(userPwd);
 			break;
 		case 7:
-			printf("g_myUser.userLevel is: %d\n", g_myUser.userLevel);
 			if (g_myUser.userLevel >= LEVEL_AMMIN)
 			{
 				printf("请输入您要强制离开的用户名：\n");
@@ -243,13 +229,12 @@ void Run()
 			}
 			break;
 		case 8:
-			printf("g_myUser.userLevel is: %d\n", g_myUser.userLevel);
 			if (g_myUser.userLevel == LEVEL_SUPER_ADMIN)
 			{
 				printf("请输入你要设置的用户名：\n");
 				gets_s(userName);
 				printf("请输入你要给予的权限（1.普通用户  2.管理员）：\n");
-				scanf("%d", &option);
+				scanf_s("%d", &option);
 				switch (option)
 				{
 				case 1:
@@ -280,12 +265,15 @@ void Run()
 
 		//确保先输出请求信息，再输出下一步操作提示。
 		Sleep(300);
-		printf("\n\n");
-		printf("|--------------------------聊天室菜单：-------------------------------|\n");
-		printf("| 1.发送群消息   2.发送私聊消息 3.获取当前在线用户 4.获取所有用户     |\n");
-		printf("| 5.设置用户名   6.设置登陆密码                                       |\n");
-		printf("| 7.强制用户离开(ADMIN)  8.设置用户级别(SUPER ADMIN)  9.退出登陆      |\n");
-		printf("|---------------------------------------------------------------------|\n");
+		if (g_isLogin == true)
+		{
+			printf("\n\n");
+			printf("|--------------------------聊天室菜单：-------------------------------|\n");
+			printf("| 1.发送群消息   2.发送私聊消息 3.获取当前在线用户 4.获取所有用户     |\n");
+			printf("| 5.设置用户名   6.设置登陆密码                                       |\n");
+			printf("| 7.强制用户离开(ADMIN)  8.设置用户级别(SUPER ADMIN)  9.退出登陆      |\n");
+			printf("|---------------------------------------------------------------------|\n");
+		}
 		printf("\n请输入指令：\n");
 	}
 }
@@ -296,12 +284,9 @@ int main(int argc, char*argv[])
 	WSADATA wsaData;
 	char userName[USER_NAME_LEN];
 	char userPwd[USER_PWD_LEN];
-	char msgBuf[MASSAGE_BUFLEN];
-	char ServerName[IP_LEN] = "192.168.9.39";//"127.0.0.1";
+	char ServerName[IP_LEN] = DEFAULT_IP;
 	int option;
 	bool isExit = false;
-	//printf("请输入服务器ip: ");
-	//gets(ServerName);
 
 	// 初始化winsock 
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -321,7 +306,7 @@ int main(int argc, char*argv[])
 		while (!isExit)
 		{
 			printf("注册请输入：1\t登陆请输入: 2\t退出程序请输入: 3\n");
-			scanf("%d", &option);
+			scanf_s("%d", &option);
 			while (getchar() != '\n')
 			{
 				continue;
@@ -340,9 +325,7 @@ int main(int argc, char*argv[])
 					printf("您输入的注册信息不合法！\n");
 					break;
 				}
-				//printf("Before Register.\n");
 				iResult = Register(userName, userPwd);
-				//printf("After Register.\n");
 				if (iResult == SUCCESS)
 				{
 					printf("注册成功！\n");

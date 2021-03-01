@@ -30,7 +30,6 @@ PUserOnlineNode g_pUserOnlineEnd;
 
 map<sockaddr_in_t, bool> curAddrIfLogin;
 
-HANDLE g_hMutex;
 bool g_isExit = false;
 
 // 初始化监听套接字
@@ -41,11 +40,8 @@ int InitListenSocket(SOCKET *pListenSocket)
 	sockaddr_in service;
 
 	service.sin_family = AF_INET;
-	//service.sin_addr.s_addr = inet_addr("127.0.0.1");
-	//service.sin_addr.s_addr = ADDR_ANY;
 	service.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 	service.sin_port = htons(DEFAULT_PORT);
-	//*pListenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	*pListenSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	if (*pListenSocket != INVALID_SOCKET)
 	{
@@ -73,23 +69,12 @@ unsigned __stdcall ClientThread(void *pSocket)
 	sockaddr_in currAddr;
 	bool isLogin = false;
 	int tmp_count = 0;
-	//SOCKET clientSocket = INVALID_SOCKET;
 	SOCKET *pListenSocket = (SOCKET*)pSocket;
 	PUserOnlineNode currOnlineUser = NULL;
 	int addrLen = sizeof(currAddr);
-	/*currOnlineUser = (PUserOnlineNode)malloc(sizeof(UserOnlineNode));
-	if (currOnlineUser == NULL)
-	{
-		printf("Malloc failed!\n");
-		return ERROR_MALLOC;
-	}*/
 
 	while (!g_isExit)
 	{
-		// 原子锁
-		/*WaitForSingleObject(g_hMutex, INFINITE);
-		clientSocket = accept(*pListenSocket, (sockaddr *)&currAddr, &addrLen);
-		ReleaseMutex(g_hMutex);*/
 		if (*pListenSocket == INVALID_SOCKET)
 		{
 			printf("accept failed: %d\n", GetLastError());
@@ -110,13 +95,13 @@ unsigned __stdcall ClientThread(void *pSocket)
 			先点了获取当前在线列表，都是后登的用户界面重复显示。
 			4. currOnlineUser这个变量有问题，这个变量只malloc了一次，而每登陆一个用户应该再malloc一次!
 			5. malloc重新调整了，但是还没进行free处理！
-			6. 
+			6. 有些函数不需要currAddr
+			7. 2个用户登陆，然后其中一个退出，另一个给他私聊，然后出错！
+			8. 
 			*/
 
 			memset(&currAddr, 0, sizeof(currAddr));
-			//nRet = RecvHead(clientSocket, &head);
 			nRet = RecvHead(*pListenSocket, &head, currAddr);
-			//printf("tmp_count=%d\n", ++tmp_count);
 			if (nRet != SUCCESS)
 			{
 				break;
@@ -124,18 +109,14 @@ unsigned __stdcall ClientThread(void *pSocket)
 
 			sockaddr_in_t tmp;
 			tmp.s = currAddr;
-			//printf("Enter t1...\n");
-			//if (!isLogin) // 用户未登陆
 			if(curAddrIfLogin[tmp] != true)  // 用户未登陆
 			{
-				//printf("Enter t2...\n");
 				switch (head.cmd)
 				{
 				case CMD_REGIEST:
 					nRet = Register(*pListenSocket, currAddr);  //clientSocket
 					break;
 				case CMD_LOGIN:
-					//printf("Enter t22...\n");
 					nRet = Login(*pListenSocket, currOnlineUser, &isLogin, currAddr);   //clientSocket
 					break;
 				default:
@@ -143,10 +124,8 @@ unsigned __stdcall ClientThread(void *pSocket)
 					break;
 				}
 			}
-			else         // 用户已登陆
+			else   // 用户已登陆
 			{
-				//printf("Enter t3...\n");
-
 				//更新currOnlineUser的值
 				currOnlineUser = g_pUserOnlineBegin;
 				while (currOnlineUser)
@@ -159,7 +138,7 @@ unsigned __stdcall ClientThread(void *pSocket)
 				switch (head.cmd)
 				{
 				case CMD_LOGOUT:
-					nRet = Logout(pListenSocket, currOnlineUser, &isLogin, currAddr); //&clientSocket
+					nRet = Logout(pListenSocket, currOnlineUser, &isLogin);
 					break;
 				case CMD_GROUPCHAT:
 					nRet = GroupMassage(*pListenSocket, currOnlineUser, &head);
@@ -193,16 +172,14 @@ unsigned __stdcall ClientThread(void *pSocket)
 				}
 			}
 		}
-		//printf("Enter t4...\n");
 		// 发送异常，用户退出登陆
 		if (nRet != SUCCESS)
 		{
-			Logout(pListenSocket, currOnlineUser, &isLogin, currAddr);  //&clientSocket
+			Logout(pListenSocket, currOnlineUser, &isLogin);
 		}
-		closesocket(*pListenSocket);   //clientSocket
+		closesocket(*pListenSocket);
 	}
 
-	free(currOnlineUser);
 	currOnlineUser = NULL;
 	return nRet;
 }
@@ -212,7 +189,6 @@ int main()
 	int iResult;
 	WSADATA wsaData;
 	SOCKET listeningSocket = INVALID_SOCKET;
-	//HANDLE aThread[MAX_THREAD_COUNTS];
 	HANDLE aThread;
 	char ch;
 	// 初始化winsock 
@@ -223,18 +199,9 @@ int main()
 		return 1;
 	}
 
-	// 创建互斥锁
-	g_hMutex = CreateMutex(NULL, false, NULL);
-	if (g_hMutex == NULL)
-	{
-		printf("CreateMutex error: %d\n", GetLastError());
-		return 1;
-	}
-
 	InitConfig();
 
 	InitListenSocket(&listeningSocket);
-	//iResult = listen(listeningSocket, SOMAXCONN);
 	if (listeningSocket == SOCKET_ERROR)
 	{
 		printf("InitListenSocket failed with error: %d\n", WSAGetLastError());
@@ -249,10 +216,6 @@ int main()
 		int nSendBuf = 32 * 1024;//设置为32K
 		setsockopt(listeningSocket, SOL_SOCKET, SO_SNDBUF, (const char*)&nSendBuf, sizeof(int));
 
-		/*for (int i = 0; i < MAX_THREAD_COUNTS; i++)
-		{
-			aThread[i] = (HANDLE)_beginthreadex(NULL, 0, &ClientThread, (void*)&listeningSocket, 0, NULL);
-		}*/
 		aThread = (HANDLE)_beginthreadex(NULL, 0, &ClientThread, (void*)&listeningSocket, 0, NULL);
 
 		printf("服务启动成功，退出请输入（E）: \n");
@@ -275,7 +238,6 @@ int main()
 
 	// 释放资源
 	CloseConfig();
-	CloseHandle(g_hMutex);
 	closesocket(listeningSocket);
 	WSACleanup();
 

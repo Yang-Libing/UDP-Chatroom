@@ -6,7 +6,6 @@ int RecvHead(SOCKET connSocket, DataHead *pDataHead)
 {
 	int nRet = ERROR_OTHER;
 	int len = sizeof(SOCKADDR);
-	//if (recv(connSocket, (char *)pDataHead, sizeof(DataHead), 0) < 0)
 	if (recvfrom(connSocket, (char *)pDataHead, sizeof(DataHead), 0, (SOCKADDR*)&clientService, &len) == SOCKET_ERROR)
 	{
 		printf("RecvHead failed:%d \n", GetLastError());
@@ -23,7 +22,6 @@ int SendHead(SOCKET connSocket, DataHead *pDataHead)
 {
 	int nRet = SUCCESS;
 	int len = sizeof(SOCKADDR);
-	//if (send(connSocket, (char*)pDataHead, sizeof(DataHead), 0) < 0)
 	if (sendto(connSocket, (char*)pDataHead, sizeof(DataHead), 0, (SOCKADDR*)&clientService, len) == SOCKET_ERROR)
 	{
 		printf("SendHead failed:%d \n", GetLastError());
@@ -36,7 +34,6 @@ int RecvData(SOCKET connSocket, char *buf, int bufLen)
 {
 	int nRet = SUCCESS;
 	int len = sizeof(SOCKADDR);
-	//if (recv(connSocket, buf, bufLen, 0) < 0)
 	if (recvfrom(connSocket, buf, bufLen, 0, (SOCKADDR*)&clientService, &len) == SOCKET_ERROR)
 	{
 		printf("RecvData failed!\n");
@@ -49,7 +46,6 @@ int SendData(SOCKET connSocket, char *buf, int bufLen)
 {
 	int nRet = SUCCESS;
 	int len = sizeof(SOCKADDR);
-	//if (send(connSocket, buf, bufLen, 0) < 0)
 	if(sendto(connSocket, buf, bufLen, 0, (SOCKADDR*)&clientService, len) == SOCKET_ERROR)
 	{
 		printf("SendData failed!\n");
