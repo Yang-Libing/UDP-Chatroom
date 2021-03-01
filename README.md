@@ -11,10 +11,11 @@ This repository stores a concise Windows-based network chatroom code written in 
 + Visual Studio 2015
 
 ## Installation and Usage
-+ Clone this repository with git clone '''https://github.com/Yang-Libing/UDP-Chatroom.git'''
++ Clone this repository with
+    git clone https://github.com/Yang-Libing/UDP-Chatroom.git
 + Get into the repository and double click the Win-socket.sln
 + Compile the Client project and Server project separately.
-+ Deploy the executive '''Server''' to the server and '''Client''' to the client machines.
++ Deploy the executive ```Server``` to the server and ```Client``` to the client machines.
 
 ## Optimizable Space
 + Add a database for the storation of user information.
